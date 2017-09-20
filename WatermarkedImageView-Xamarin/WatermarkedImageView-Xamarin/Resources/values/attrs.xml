@@ -1,0 +1,12 @@
+﻿<resources>
+  <declare-styleable name="CustomImageView">
+    <attr name="watermarkText" format="string" />
+    <attr name="watermarkTextSize" format="dimension" />
+    <attr name="watermarkPosition" format="enum">
+      <enum name="left" value="0"/>
+      <enum name="right" value="1"/>
+      <enum name="top" value="2"/>
+      <enum name="bottom" value="3"/>
+    </attr>
+  </declare-styleable>
+</resources>
