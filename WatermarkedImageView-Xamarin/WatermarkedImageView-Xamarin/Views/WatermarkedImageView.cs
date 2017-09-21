@@ -15,10 +15,10 @@ using Android.Graphics;
 
 namespace WatermarkedImageView_Xamarin.Views
 {
-    [Register("com.jubleo.WatermarkedImageView")]
+    [Register("com.jubleo.WatermarkedImageView")] // (Optional) Register with custom name for using in xml
     public class WatermarkedImageView : ImageView
     {
-        private float TextPadding = 16;
+        private float TextPadding = 18f;
         private string WatermarkText = "WatermarkedImageView";
         private float WatermarkTextSize = 48f;
         private WatermarkPosition WatermarkPosition;
@@ -29,6 +29,7 @@ namespace WatermarkedImageView_Xamarin.Views
 
             try
             {
+                //Retrieve assigned attributes
                 WatermarkText = typedArray.GetString(Resource.Styleable.CustomImageView_watermarkText);
                 WatermarkPosition = (WatermarkPosition)typedArray.GetInteger(Resource.Styleable.CustomImageView_watermarkPosition, 0);
                 WatermarkTextSize = typedArray.GetDimension(Resource.Styleable.CustomImageView_watermarkTextSize, 48f);
@@ -49,27 +50,19 @@ namespace WatermarkedImageView_Xamarin.Views
         {
             base.OnDraw(canvas);
 
-            Paint BackgroundPaint = new Paint(PaintFlags.AntiAlias)
-            {
-                Color = Color.Black,
-                Alpha = 98,
-            };
-
-            BackgroundPaint.SetStyle(Paint.Style.Fill);
-
-
             Paint TextPaint = new Paint(PaintFlags.AntiAlias)
             {
                 Color = Color.White,
                 TextAlign = Paint.Align.Center,
-                TextSize = WatermarkTextSize
+                TextSize = WatermarkTextSize,
+                Alpha = 128
             };
 
 
             Rect textBounds = new Rect();
             TextPaint.GetTextBounds(WatermarkText, 0, WatermarkText.Length, textBounds);
 
-            float textWidth = textBounds.Width()*1f;
+            float textWidth = textBounds.Width() * 1f;
             float textHeight = textBounds.Height() * 1f;
             float canvasWidth = canvas.Width * 1f;
             float canvasHeight = canvas.Height * 1f;
@@ -77,30 +70,23 @@ namespace WatermarkedImageView_Xamarin.Views
 
             RectF backgroundRectangle = new RectF();
             PointF textPosition = new PointF();
-            switch(WatermarkPosition)
+            switch (WatermarkPosition)
             {
                 case WatermarkPosition.Top:
-                    backgroundRectangle = new RectF(canvasWidth / 2f - textWidth/2 - TextPadding, 0, canvasWidth / 2f + textWidth / 2 + TextPadding, textHeight + 2 * TextPadding);
                     textPosition = new PointF(canvasWidth / 2f, textHeight + TextPadding);
                     break;
                 case WatermarkPosition.Bottom:
-                    backgroundRectangle = new RectF(canvasWidth / 2f - textWidth / 2 - TextPadding, canvasHeight - textHeight - 2 * TextPadding, canvasWidth / 2f + textWidth / 2 + TextPadding, canvasHeight);
                     textPosition = new PointF(canvasWidth / 2f, canvasHeight - TextPadding);
                     break;
                 case WatermarkPosition.Left:
-                    backgroundRectangle = new RectF(canvasWidth / 2f - textWidth/ 2f - TextPadding, canvasHeight / 2f- TextPadding, canvasWidth / 2f + textWidth / 2f + TextPadding, canvasHeight / 2f + textHeight + TextPadding);
-                    textPosition = new PointF(canvasWidth / 2f, canvasHeight / 2f + textHeight);
+                    textPosition = new PointF(canvasWidth - textHeight - TextPadding, canvasHeight / 2f + textWidth / 2f);
+                    canvas.Rotate(90, textPosition.X, textPosition.Y);
                     break;
                 case WatermarkPosition.Right:
-                    backgroundRectangle = new RectF(canvasWidth / 2f - textWidth / 2 - TextPadding, 0, canvasWidth / 2f + textWidth / 2 + TextPadding, textHeight + 2 * TextPadding);
-                    textPosition = new PointF(canvasWidth / 2f, textHeight + TextPadding);
+                    textPosition = new PointF(TextPadding + textHeight, canvasHeight / 2f - textWidth / 2f);
+                    canvas.Rotate(-90, textPosition.X, textPosition.Y);
                     break;
             }
-
-            // Draws background rectangle
-            canvas.DrawRect(backgroundRectangle, BackgroundPaint);
-
-            //canvas.Rotate(90, textPosition.X, textPosition.Y);
 
             //draws text
             canvas.DrawText(WatermarkText, 0, WatermarkText.Length, textPosition.X, textPosition.Y, TextPaint);
